@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>مدوّنتي</title>
+  <link rel="stylesheet" href="assets/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>">
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">📝 مدوّنتي</a>
+  <div class="nav-links">
+    <a href="index.html">الرئيسية</a>
+    <a href="about.html">عن المدوّنة</a>
+    <a href="archive.html">الأرشيف</a>
+  </div>
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">الرئيسية</a>
+  <a href="about.html">عن المدوّنة</a>
+  <a href="archive.html">الأرشيف</a>
+</div>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">✨ مدوّنة عربية</div>
+    <h1>أفكار وتجارب بالعربية</h1>
+    <p>نشاركك أفضل المقالات في التقنية، التصميم، والحياة</p>
+    <div class="hero-search">
+      <input type="text" id="searchInput" placeholder="🔍 ابحث في المقالات..." oninput="filterPosts()">
+    </div>
+  </div>
+  <div class="hero-shapes">
+    <div class="shape s1"></div>
+    <div class="shape s2"></div>
+    <div class="shape s3"></div>
+  </div>
+</header>
+
+<main class="container">
+  <div class="section-header">
+    <h2>أحدث المقالات</h2>
+    <div class="tags-filter" id="tagsFilter"></div>
+  </div>
+  <div class="posts-grid" id="postsGrid"></div>
+  <div class="no-results" id="noResults" style="display:none">
+    <span>🔍</span>
+    <p>لا توجد نتائج مطابقة</p>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">📝 مدوّنتي</div>
+    <p>صُنع بـ ❤️ للقارئ العربي</p>
+    <div class="footer-links">
+      <a href="index.html">الرئيسية</a>
+      <a href="about.html">عن المدوّنة</a>
+      <a href="archive.html">الأرشيف</a>
+    </div>
+    <p class="copy">© <span id="yr"></span> جميع الحقوق محفوظة</p>
+  </div>
+</footer>
+
+<script src="assets/posts.js"></script>
+<script src="assets/app.js"></script>
+<script>document.getElementById("yr").textContent = new Date().getFullYear();</script>
+</body>
+</html>

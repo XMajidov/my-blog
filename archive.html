@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>الأرشيف</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">📝 مدوّنتي</a>
+  <div class="nav-links">
+    <a href="index.html">الرئيسية</a>
+    <a href="about.html">عن المدوّنة</a>
+    <a href="archive.html" class="active">الأرشيف</a>
+  </div>
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">الرئيسية</a>
+  <a href="about.html">عن المدوّنة</a>
+  <a href="archive.html">الأرشيف</a>
+</div>
+
+<div class="page-hero">
+  <h1>أرشيف المقالات</h1>
+  <p>جميع المقالات مرتّبة حسب التاريخ</p>
+</div>
+
+<main class="container" style="max-width:780px">
+  <div id="archiveList"></div>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">📝 مدوّنتي</div>
+    <p class="copy">© <span id="yr"></span> جميع الحقوق محفوظة</p>
+  </div>
+</footer>
+<script src="assets/posts.js"></script>
+<script>
+  document.getElementById("yr").textContent = new Date().getFullYear();
+  function toggleMenu(){document.getElementById("mobileMenu").classList.toggle("open");}
+
+  const grouped = {};
+  POSTS.forEach(p => {
+    const y = p.date.split('-')[0];
+    if (!grouped[y]) grouped[y] = [];
+    grouped[y].push(p);
+  });
+
+  const months = ['يناير','فبراير','مارس','أبريل','مايو','يونيو',
+                  'يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+  function fmtDate(d){
+    const dt=new Date(d);
+    return dt.getDate()+' '+months[dt.getMonth()]+' '+dt.getFullYear();
+  }
+
+  let html = '';
+  Object.keys(grouped).sort((a,b)=>b-a).forEach(year => {
+    html += `<div class="archive-year"><h2>${year}</h2><ul class="archive-list">`;
+    grouped[year].forEach(p => {
+      html += `<li>
+        <span class="arch-date">${fmtDate(p.date)}</span>
+        <a href="posts/${p.slug}.html">${p.title}</a>
+        <span class="arch-tag">${p.tags[0]||''}</span>
+      </li>`;
+    });
+    html += `</ul></div>`;
+  });
+  document.getElementById('archiveList').innerHTML = html;
+</script>
+</body>
+</html>
