@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>أفضل ممارسات PHP وMySQL في 2026</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="logo">📝 مدوّنتي</a>
+  <div class="nav-links">
+    <a href="../index.html">الرئيسية</a>
+    <a href="../about.html">عن المدوّنة</a>
+    <a href="../archive.html">الأرشيف</a>
+  </div>
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="../index.html">الرئيسية</a>
+  <a href="../about.html">عن المدوّنة</a>
+  <a href="../archive.html">الأرشيف</a>
+</div>
+
+<div class="post-hero">
+  <div class="post-hero-inner">
+    <div class="post-tags"><span class="tag">تقنية</span><span class="tag">PHP</span></div>
+    <h1>أفضل ممارسات PHP وMySQL في 2026</h1>
+    <div class="post-meta">
+      <span>📅 1 مارس 2026</span>
+      <span>✍️ صاحب المدوّنة</span>
+      <span>⏱️ 10 دقائق قراءة</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="post-content">
+    <h2>مقدمة</h2>
+    <p>PHP لا تزال واحدة من أكثر لغات تطوير الويب استخداماً في العالم، وبالتزاوج مع MySQL تُشكّل ثنائياً قوياً جداً.</p>
+
+    <h2>١. استخدم PDO دائماً</h2>
+    <pre><code>$pdo = new PDO(
+  "mysql:host=localhost;dbname=mydb;charset=utf8mb4",
+  $user, $pass,
+  [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+);</code></pre>
+
+    <h2>٢. Prepared Statements إلزامية</h2>
+    <pre><code>$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+$stmt->execute([$id]);
+$user = $stmt->fetch();</code></pre>
+    <p>هذا يحميك من هجمات SQL Injection بشكل كامل.</p>
+
+    <h2>٣. ترميز utf8mb4</h2>
+    <p>استخدم <code>utf8mb4</code> دائماً وليس <code>utf8</code> للدعم الكامل للعربية والإيموجي.</p>
+
+    <h2>٤. Password Hashing</h2>
+    <pre><code>// تخزين كلمة المرور
+$hash = password_hash($password, PASSWORD_BCRYPT);
+
+// التحقق
+if (password_verify($input, $hash)) { /* دخول ناجح */ }</code></pre>
+
+    <blockquote>لا تخزّن كلمات المرور كنص عادي أبداً — هذا خطأ فادح.</blockquote>
+  </div>
+  <div class="post-nav">
+    <a href="../index.html">← العودة للرئيسية</a>
+    <a href="../archive.html">الأرشيف ←</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">📝 مدوّنتي</div>
+    <div class="footer-links">
+      <a href="../index.html">الرئيسية</a>
+      <a href="../about.html">عن المدوّنة</a>
+      <a href="../archive.html">الأرشيف</a>
+    </div>
+    <p class="copy">© <span id="yr"></span> جميع الحقوق محفوظة</p>
+  </div>
+</footer>
+<script>
+  document.getElementById("yr").textContent=new Date().getFullYear();
+  function toggleMenu(){document.getElementById("mobileMenu").classList.toggle("open");}
+</script>
+</body>
+</html>

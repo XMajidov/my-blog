@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>تطوير الويب للمواقع العربية: دليل شامل</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="logo">📝 مدوّنتي</a>
+  <div class="nav-links">
+    <a href="../index.html">الرئيسية</a>
+    <a href="../about.html">عن المدوّنة</a>
+    <a href="../archive.html">الأرشيف</a>
+  </div>
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="../index.html">الرئيسية</a>
+  <a href="../about.html">عن المدوّنة</a>
+  <a href="../archive.html">الأرشيف</a>
+</div>
+
+<div class="post-hero">
+  <div class="post-hero-inner">
+    <div class="post-tags"><span class="tag">تقنية</span><span class="tag">تطوير ويب</span></div>
+    <h1>تطوير الويب للمواقع العربية: دليل شامل</h1>
+    <div class="post-meta">
+      <span>📅 10 مارس 2026</span>
+      <span>✍️ صاحب المدوّنة</span>
+      <span>⏱️ 7 دقائق قراءة</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="post-content">
+    <h2>مقدمة</h2>
+    <p>بناء مواقع عربية يختلف عن غيرها في عدة نقاط جوهرية، أبرزها دعم الاتجاه من اليمين إلى اليسار (RTL).</p>
+
+    <h2>الخطوة الأولى: إعداد HTML</h2>
+    <pre><code>&lt;html lang="ar" dir="rtl"&gt;</code></pre>
+    <p>هذا السطر الوحيد يخبر المتصفح بأن الصفحة عربية وتُقرأ من اليمين لليسار.</p>
+
+    <h2>الخطوات في CSS</h2>
+    <ul>
+      <li>استخدم <code>margin-right</code> بدلاً من <code>margin-left</code></li>
+      <li>استخدم <code>padding-right</code> بدلاً من <code>padding-left</code></li>
+      <li>استخدم <code>border-right</code> للـ blockquotes</li>
+      <li>استخدم <code>text-align: right</code> كقيمة افتراضية</li>
+    </ul>
+
+    <h2>الخطوط العربية الموصى بها</h2>
+    <table>
+      <tr><th>الخط</th><th>الاستخدام</th><th>المصدر</th></tr>
+      <tr><td>Cairo</td><td>عناوين وواجهات</td><td>Google Fonts</td></tr>
+      <tr><td>Tajawal</td><td>نصوص طويلة</td><td>Google Fonts</td></tr>
+      <tr><td>Noto Naskh</td><td>محتوى تقليدي</td><td>Google Fonts</td></tr>
+    </table>
+
+    <blockquote>نصيحة: دائماً اختبر موقعك على الجوال للتأكد من عرض العربية بشكل صحيح.</blockquote>
+  </div>
+  <div class="post-nav">
+    <a href="../index.html">← العودة للرئيسية</a>
+    <a href="../archive.html">الأرشيف ←</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">📝 مدوّنتي</div>
+    <div class="footer-links">
+      <a href="../index.html">الرئيسية</a>
+      <a href="../about.html">عن المدوّنة</a>
+      <a href="../archive.html">الأرشيف</a>
+    </div>
+    <p class="copy">© <span id="yr"></span> جميع الحقوق محفوظة</p>
+  </div>
+</footer>
+<script>
+  document.getElementById("yr").textContent=new Date().getFullYear();
+  function toggleMenu(){document.getElementById("mobileMenu").classList.toggle("open");}
+</script>
+</body>
+</html>
