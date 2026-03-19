@@ -3,36 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>لوحة التحكم — مدوّنتي</title>
-  <link rel="stylesheet" href="../assets/style.css">
+  <title>لوحة التحكم</title>
   <link rel="stylesheet" href="admin.css">
 </head>
 <body class="admin-body">
 
-<!-- ══ LOGIN SCREEN ══════════════════════════════════════════════════════════ -->
+<!-- LOGIN -->
 <div class="login-screen" id="loginScreen">
   <div class="login-card">
     <div class="login-icon">🔐</div>
     <h2>لوحة التحكم</h2>
     <p>أدخل كلمة المرور للمتابعة</p>
     <div class="login-error" id="loginError"></div>
-    <form onsubmit="doLogin(event)">
-      <div class="input-wrap">
-        <input type="password" id="passInput" placeholder="••••••••" autocomplete="current-password">
-        <button type="button" class="eye-btn" onclick="togglePass()">👁</button>
-      </div>
-      <button type="submit" class="btn-login">دخول →</button>
-    </form>
+    <div class="input-wrap">
+      <input type="password" id="passInput" placeholder="••••••••" autocomplete="off">
+      <button type="button" class="eye-btn" onclick="togglePass()">👁</button>
+    </div>
+    <button class="btn-login" onclick="doLogin()">دخول →</button>
     <a href="../index.html" class="back-link">← العودة للمدوّنة</a>
   </div>
 </div>
 
-<!-- ══ DASHBOARD ═════════════════════════════════════════════════════════════ -->
+<!-- DASHBOARD -->
 <div class="dashboard" id="dashboard" style="display:none">
 
   <nav class="admin-nav">
     <a href="../index.html" class="logo">📝 مدوّنتي</a>
-    <div class="admin-nav-center">لوحة التحكم</div>
+    <span class="admin-nav-center">لوحة التحكم</span>
     <div class="admin-nav-actions">
       <button class="btn-new" onclick="openModal()">+ مقال جديد</button>
       <button class="btn-logout" onclick="doLogout()">خروج 🚪</button>
@@ -40,58 +37,43 @@
   </nav>
 
   <div class="admin-container">
-
-    <!-- Stats -->
     <div class="stats-row" id="statsRow"></div>
 
-    <!-- Search -->
     <div class="admin-toolbar">
-      <input type="text" id="adminSearch" placeholder="🔍 ابحث في المقالات..."
-             oninput="renderTable()" class="admin-search">
+      <input type="text" id="adminSearch" placeholder="🔍 ابحث في المقالات..." oninput="renderTable()" class="admin-search">
       <select id="tagFilter" onchange="renderTable()" class="admin-select">
         <option value="">كل الوسوم</option>
       </select>
     </div>
 
-    <!-- Table -->
     <div class="table-wrap">
       <table class="posts-table">
         <thead>
           <tr>
-            <th>المقال</th>
-            <th>الوسوم</th>
-            <th>التاريخ</th>
-            <th>وقت القراءة</th>
-            <th>إجراءات</th>
+            <th>المقال</th><th>الوسوم</th><th>التاريخ</th><th>إجراءات</th>
           </tr>
         </thead>
         <tbody id="postsTableBody"></tbody>
       </table>
     </div>
 
-    <!-- Export section -->
     <div class="export-section">
       <h3>📤 تصدير للنشر على GitHub</h3>
-      <p>بعد إضافة أو تعديل المقالات، اضغط لتنزيل الملفات المحدّثة ورفعها على GitHub.</p>
+      <p>بعد التعديل، نزّل الملفات وارفعها على GitHub.</p>
       <div class="export-btns">
-        <button class="btn-export" onclick="exportPostsJS()">
-          ⬇️ تنزيل posts.js
-        </button>
-        <button class="btn-export secondary" onclick="exportAllHTML()">
-          ⬇️ تنزيل جميع صفحات المقالات (HTML)
-        </button>
+        <button class="btn-export" onclick="exportPostsJS()">⬇️ تنزيل posts.js</button>
+        <button class="btn-export secondary" onclick="exportAllHTML()">⬇️ تنزيل صفحات المقالات (HTML)</button>
       </div>
       <div class="export-hint">
-        💡 <strong>posts.js</strong> → ضعه في <code>assets/</code> | 
-        <strong>ملفات HTML</strong> → ضعها في مجلد <code>posts/</code>
+        💡 <strong>posts.js</strong> → <code>assets/posts.js</code> &nbsp;|&nbsp;
+           <strong>ملفات HTML</strong> → <code>posts/</code>
       </div>
     </div>
-
   </div>
 </div>
 
-<!-- ══ MODAL: ADD / EDIT ══════════════════════════════════════════════════════ -->
-<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+<!-- MODAL: ADD / EDIT -->
+<div class="modal-overlay" id="modalOverlay">
   <div class="modal" id="modal">
     <div class="modal-header">
       <h2 id="modalTitle">مقال جديد</h2>
@@ -100,22 +82,20 @@
     <div class="modal-body">
       <input type="hidden" id="editSlug">
 
-      <div class="form-row">
-        <div class="form-group full">
-          <label>عنوان المقال <span class="req">*</span></label>
-          <input type="text" id="fTitle" placeholder="اكتب عنواناً جذاباً...">
-        </div>
+      <div class="form-group">
+        <label>عنوان المقال <span class="req">*</span></label>
+        <input type="text" id="fTitle" placeholder="اكتب عنواناً جذاباً..." oninput="autoSlug()">
       </div>
 
       <div class="form-row two-col">
         <div class="form-group">
           <label>Slug (رابط المقال) <span class="req">*</span></label>
-          <input type="text" id="fSlug" placeholder="my-post-slug" dir="ltr">
-          <small>أحرف إنجليزية وشرطات فقط</small>
+          <input type="text" id="fSlug" placeholder="my-post-slug" dir="ltr" oninput="this.dataset.manual=1">
+          <small>أحرف إنجليزية وأرقام وشرطات فقط</small>
         </div>
         <div class="form-group">
           <label>الكاتب</label>
-          <input type="text" id="fAuthor" placeholder="اسم الكاتب">
+          <input type="text" id="fAuthor" value="صاحب المدوّنة">
         </div>
       </div>
 
@@ -126,7 +106,7 @@
         </div>
         <div class="form-group">
           <label>وقت القراءة (دقائق)</label>
-          <input type="number" id="fReadTime" min="1" max="60" value="5" dir="ltr">
+          <input type="number" id="fReadTime" value="5" min="1" dir="ltr">
         </div>
       </div>
 
@@ -137,41 +117,35 @@
         </div>
         <div class="form-group">
           <label>الإيموجي</label>
-          <input type="text" id="fEmoji" placeholder="🚀" maxlength="4">
+          <input type="text" id="fEmoji" placeholder="🚀" value="📄">
         </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group full">
-          <label>مقتطف المقال <span class="req">*</span></label>
-          <textarea id="fExcerpt" rows="2" placeholder="وصف مختصر يظهر في بطاقة المقال..."></textarea>
-        </div>
+      <div class="form-group">
+        <label>مقتطف قصير <span class="req">*</span></label>
+        <textarea id="fExcerpt" rows="2" placeholder="وصف مختصر يظهر في بطاقة المقال..."></textarea>
       </div>
 
-      <div class="form-row">
-        <div class="form-group full">
-          <label>محتوى المقال (HTML) <span class="req">*</span></label>
-          <div class="editor-toolbar">
-            <button type="button" onclick="ins('h2')">H2</button>
-            <button type="button" onclick="ins('h3')">H3</button>
-            <button type="button" onclick="ins('p')">فقرة</button>
-            <button type="button" onclick="ins('b')"><b>B</b></button>
-            <button type="button" onclick="ins('code')">كود</button>
-            <button type="button" onclick="ins('pre')">بلوك كود</button>
-            <button type="button" onclick="ins('ul')">قائمة</button>
-            <button type="button" onclick="ins('bq')">اقتباس</button>
-            <button type="button" onclick="ins('a')">رابط</button>
-            <button type="button" onclick="togglePreview()">👁 معاينة</button>
-          </div>
-          <div class="editor-split" id="editorSplit">
-            <textarea id="fContent" rows="14"
-              placeholder="<h2>عنوان</h2>&#10;<p>نص الفقرة...</p>"
-              oninput="livePreview()"></textarea>
-            <div class="preview-pane post-content" id="livePreviewPane" style="display:none"></div>
-          </div>
+      <div class="form-group">
+        <label>محتوى المقال (HTML) <span class="req">*</span></label>
+        <div class="editor-toolbar">
+          <button type="button" onclick="ins('h2')">H2</button>
+          <button type="button" onclick="ins('h3')">H3</button>
+          <button type="button" onclick="ins('p')">فقرة</button>
+          <button type="button" onclick="ins('b')"><b>B</b></button>
+          <button type="button" onclick="ins('code')">كود</button>
+          <button type="button" onclick="ins('pre')">بلوك كود</button>
+          <button type="button" onclick="ins('ul')">قائمة</button>
+          <button type="button" onclick="ins('bq')">اقتباس</button>
+          <button type="button" onclick="togglePreview()">👁 معاينة</button>
+        </div>
+        <div class="editor-split">
+          <textarea id="fContent" rows="14"
+            placeholder="<h2>عنوان</h2>&#10;<p>نص المقال...</p>"
+            oninput="livePreview()"></textarea>
+          <div class="preview-pane" id="livePreviewPane" style="display:none"></div>
         </div>
       </div>
-
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal()">إلغاء</button>
@@ -180,18 +154,17 @@
   </div>
 </div>
 
-<!-- ══ DELETE CONFIRM ════════════════════════════════════════════════════════ -->
-<div class="modal-overlay" id="deleteOverlay" onclick="closeDelete(event)">
+<!-- DELETE CONFIRM -->
+<div class="modal-overlay" id="deleteOverlay">
   <div class="modal small-modal">
     <div class="modal-header">
       <h2>تأكيد الحذف</h2>
       <button class="modal-close" onclick="closeDelete()">✕</button>
     </div>
     <div class="modal-body" style="text-align:center;padding:2rem">
-      <div style="font-size:3.5rem;margin-bottom:1rem">🗑️</div>
+      <div style="font-size:3rem;margin-bottom:1rem">🗑️</div>
       <p>هل أنت متأكد من حذف المقال؟</p>
-      <p id="deletePostTitle" style="font-weight:700;margin-top:.5rem;color:var(--primary)"></p>
-      <p style="color:var(--muted);font-size:.9rem;margin-top:.5rem">لا يمكن التراجع عن هذا الإجراء</p>
+      <p id="deletePostTitle" style="font-weight:700;color:var(--primary);margin-top:.5rem"></p>
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeDelete()">إلغاء</button>
@@ -200,38 +173,423 @@
   </div>
 </div>
 
-<!-- ══ CHANGE PASSWORD MODAL ════════════════════════════════════════════════ -->
-<div class="modal-overlay" id="pwdOverlay" onclick="closePwdModal(event)">
+<!-- CHANGE PASSWORD -->
+<div class="modal-overlay" id="pwdOverlay">
   <div class="modal small-modal">
     <div class="modal-header">
       <h2>🔑 تغيير كلمة المرور</h2>
-      <button class="modal-close" onclick="closePwdModal()">✕</button>
+      <button class="modal-close" onclick="document.getElementById('pwdOverlay').style.display='none'">✕</button>
     </div>
     <div class="modal-body" style="padding:1.5rem">
-      <div class="form-group full" style="margin-bottom:1.2rem">
+      <div class="form-group" style="margin-bottom:1rem">
         <label>كلمة المرور الجديدة</label>
-        <div class="input-wrap">
-          <input type="password" id="newPwd1" placeholder="••••••••">
-          <button type="button" class="eye-btn" onclick="togglePwd('newPwd1')">👁</button>
-        </div>
+        <div class="input-wrap"><input type="password" id="newPwd1" placeholder="••••••••">
+        <button type="button" class="eye-btn" onclick="togglePwd('newPwd1')">👁</button></div>
       </div>
-      <div class="form-group full">
+      <div class="form-group">
         <label>تأكيد كلمة المرور</label>
-        <div class="input-wrap">
-          <input type="password" id="newPwd2" placeholder="••••••••">
-          <button type="button" class="eye-btn" onclick="togglePwd('newPwd2')">👁</button>
-        </div>
+        <div class="input-wrap"><input type="password" id="newPwd2" placeholder="••••••••">
+        <button type="button" class="eye-btn" onclick="togglePwd('newPwd2')">👁</button></div>
       </div>
       <div class="login-error" id="pwdError" style="margin-top:1rem"></div>
     </div>
     <div class="modal-footer">
-      <button class="btn-cancel" onclick="closePwdModal()">إلغاء</button>
+      <button class="btn-cancel" onclick="document.getElementById('pwdOverlay').style.display='none'">إلغاء</button>
       <button class="btn-save" onclick="changePwd()">💾 حفظ</button>
     </div>
   </div>
 </div>
 
-<script src="../assets/posts.js"></script>
-<script src="admin.js"></script>
+<div id="toastEl" class="toast"></div>
+
+<script>
+// ══ EMBEDDED DEFAULT POSTS (لا يحتاج posts.js خارجي) ══
+const DEFAULT_POSTS = [
+  {
+    slug:"welcome", title:"مرحباً في مدوّنتي العربية",
+    excerpt:"أولى مقالاتي في هذه المدوّنة، أشاركك فيها أفكاري وتجاربي.",
+    date:"2026-03-15", author:"صاحب المدوّنة", tags:["عام","مقدمة"], readTime:3, emoji:"👋",
+    content:"<h2>مرحباً بك 👋</h2><p>أهلاً وسهلاً في مدوّنتي العربية!</p>"
+  },
+  {
+    slug:"arabic-web-dev", title:"تطوير الويب للمواقع العربية",
+    excerpt:"كل ما تحتاج معرفته عن بناء مواقع عربية احترافية تدعم RTL.",
+    date:"2026-03-10", author:"صاحب المدوّنة", tags:["تقنية","تطوير ويب"], readTime:7, emoji:"🌐",
+    content:"<h2>مقدمة</h2><p>بناء مواقع عربية يختلف في عدة نقاط جوهرية.</p>"
+  }
+];
+
+// ══ CONFIG ══
+const STORAGE_KEY = 'blog_posts_v1';
+const HASH_KEY    = 'blog_admin_hash';
+const SESSION_KEY = 'blog_session';
+
+// كلمة المرور الافتراضية: admin
+// مشفّرة بـ djb2 (لا تحتاج crypto.subtle — تعمل في كل البيئات)
+const DEFAULT_HASH = '2087804311'; // hash of "admin"
+
+function djb2(str) {
+  let h = 5381;
+  for (let i = 0; i < str.length; i++)
+    h = (((h << 5) + h) + str.charCodeAt(i)) & 0xFFFFFFFF;
+  return (h >>> 0).toString();
+}
+
+function getHash()  { return localStorage.getItem(HASH_KEY) || DEFAULT_HASH; }
+function getPosts() {
+  try {
+    const s = localStorage.getItem(STORAGE_KEY);
+    return s ? JSON.parse(s) : [...DEFAULT_POSTS];
+  } catch(e) { return [...DEFAULT_POSTS]; }
+}
+function savePosts(arr) { localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }
+
+// ══ TOAST ══
+function toast(msg, dur=2800) {
+  const t = document.getElementById('toastEl');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur);
+}
+
+// ══ AUTH ══
+function isLoggedIn() { return sessionStorage.getItem(SESSION_KEY) === '1'; }
+
+function doLogin() {
+  const pass = document.getElementById('passInput').value;
+  if (!pass) { showError('يرجى إدخال كلمة المرور'); return; }
+  const hash = djb2(pass);
+  if (hash === getHash()) {
+    sessionStorage.setItem(SESSION_KEY, '1');
+    document.getElementById('loginError').style.display = 'none';
+    showDashboard();
+  } else {
+    showError('⚠️ كلمة المرور غير صحيحة، حاول مجدداً.');
+    document.getElementById('passInput').value = '';
+    document.getElementById('passInput').focus();
+  }
+}
+
+// السماح بالضغط على Enter
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('passInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+  if (isLoggedIn()) showDashboard();
+  document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
+});
+
+function showError(msg) {
+  const el = document.getElementById('loginError');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+function doLogout() {
+  sessionStorage.removeItem(SESSION_KEY);
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('loginScreen').style.display = '';
+}
+
+function togglePass() {
+  const i = document.getElementById('passInput');
+  i.type = i.type === 'password' ? 'text' : 'password';
+}
+function togglePwd(id) {
+  const i = document.getElementById(id);
+  i.type = i.type === 'password' ? 'text' : 'password';
+}
+
+function showDashboard() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display = '';
+  renderStats();
+  renderTagFilter();
+  renderTable();
+}
+
+// ══ CHANGE PASSWORD ══
+function changePwd() {
+  const p1 = document.getElementById('newPwd1').value;
+  const p2 = document.getElementById('newPwd2').value;
+  const errEl = document.getElementById('pwdError');
+  if (p1.length < 4) { errEl.textContent='كلمة المرور 4 أحرف على الأقل'; errEl.style.display='block'; return; }
+  if (p1 !== p2) { errEl.textContent='كلمتا المرور غير متطابقتين'; errEl.style.display='block'; return; }
+  localStorage.setItem(HASH_KEY, djb2(p1));
+  document.getElementById('pwdOverlay').style.display = 'none';
+  document.getElementById('newPwd1').value = '';
+  document.getElementById('newPwd2').value = '';
+  errEl.style.display = 'none';
+  toast('✅ تم تغيير كلمة المرور');
+}
+
+// ══ STATS ══
+function renderStats() {
+  const posts = getPosts();
+  const tags  = [...new Set(posts.flatMap(p => p.tags))];
+  const avg   = posts.length ? Math.round(posts.reduce((s,p)=>s+p.readTime,0)/posts.length) : 0;
+  document.getElementById('statsRow').innerHTML = `
+    <div class="stat-card"><div class="ico">📝</div><div class="num">${posts.length}</div><div class="lbl">مقال</div></div>
+    <div class="stat-card"><div class="ico">🏷️</div><div class="num">${tags.length}</div><div class="lbl">وسم</div></div>
+    <div class="stat-card"><div class="ico">⏱️</div><div class="num">${avg}</div><div class="lbl">دقائق متوسط</div></div>
+    <div class="stat-card" style="cursor:pointer" onclick="document.getElementById('pwdOverlay').style.display='flex'">
+      <div class="ico">🔑</div><div class="num" style="font-size:.9rem;margin-top:.3rem">تغيير</div><div class="lbl">كلمة المرور</div>
+    </div>`;
+}
+
+// ══ TAG FILTER ══
+function renderTagFilter() {
+  const tags = [...new Set(getPosts().flatMap(p => p.tags))];
+  const sel  = document.getElementById('tagFilter');
+  sel.innerHTML = '<option value="">كل الوسوم</option>' +
+    tags.map(t=>`<option value="${t}">${t}</option>`).join('');
+}
+
+// ══ TABLE ══
+const AR_MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+function fmtDate(d){
+  const dt=new Date(d);
+  return isNaN(dt)?d:`${dt.getDate()} ${AR_MONTHS[dt.getMonth()]} ${dt.getFullYear()}`;
+}
+
+function renderTable() {
+  const q   = (document.getElementById('adminSearch').value||'').toLowerCase();
+  const tag = document.getElementById('tagFilter').value;
+  const posts = getPosts().filter(p=>
+    (!q  || p.title.toLowerCase().includes(q)||p.excerpt.toLowerCase().includes(q)) &&
+    (!tag|| p.tags.includes(tag))
+  );
+  const tbody = document.getElementById('postsTableBody');
+  if (!posts.length) {
+    tbody.innerHTML='<tr><td colspan="4"><div class="empty-table"><span>🔍</span>لا توجد نتائج</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = posts.map(p=>`
+    <tr>
+      <td>
+        <div style="font-weight:700">${p.emoji||'📄'} ${p.title}</div>
+        <div style="color:var(--muted);font-size:.82rem;margin-top:.2rem">${(p.excerpt||'').substring(0,80)}...</div>
+      </td>
+      <td>${p.tags.map(t=>`<span class="tag-chip">${t}</span>`).join('')}</td>
+      <td style="white-space:nowrap;color:var(--muted);font-size:.85rem">${fmtDate(p.date)}</td>
+      <td>
+        <div class="actions-cell">
+          <button class="btn-edit" onclick="editPost('${p.slug}')">✏️ تعديل</button>
+          <button class="btn-del"  onclick="openDelete('${p.slug}','${p.title.replace(/'/g,"\\'")}')">🗑️ حذف</button>
+          <a class="btn-view" href="../posts/${p.slug}.html" target="_blank">👁 عرض</a>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+// ══ MODAL ══
+function openModal() {
+  document.getElementById('editSlug').value   = '';
+  document.getElementById('fTitle').value     = '';
+  document.getElementById('fSlug').value      = '';
+  document.getElementById('fSlug').dataset.manual = '';
+  document.getElementById('fAuthor').value    = 'صاحب المدوّنة';
+  document.getElementById('fDate').value      = new Date().toISOString().split('T')[0];
+  document.getElementById('fReadTime').value  = '5';
+  document.getElementById('fTags').value      = '';
+  document.getElementById('fEmoji').value     = '📄';
+  document.getElementById('fExcerpt').value   = '';
+  document.getElementById('fContent').value   = '';
+  document.getElementById('livePreviewPane').style.display = 'none';
+  document.getElementById('modalTitle').textContent = 'مقال جديد ✨';
+  document.getElementById('modalOverlay').style.display = 'flex';
+}
+
+function autoSlug() {
+  const slugEl = document.getElementById('fSlug');
+  if (!slugEl.dataset.manual) {
+    slugEl.value = document.getElementById('fTitle').value
+      .toLowerCase().trim()
+      .replace(/\s+/g,'-')
+      .replace(/[^\w\-]/g,'')
+      .substring(0,50);
+  }
+}
+
+function editPost(slug) {
+  const p = getPosts().find(x=>x.slug===slug);
+  if (!p) return;
+  document.getElementById('editSlug').value   = slug;
+  document.getElementById('fTitle').value     = p.title;
+  document.getElementById('fSlug').value      = p.slug;
+  document.getElementById('fSlug').dataset.manual = '1';
+  document.getElementById('fAuthor').value    = p.author||'';
+  document.getElementById('fDate').value      = p.date;
+  document.getElementById('fReadTime').value  = p.readTime;
+  document.getElementById('fTags').value      = p.tags.join(', ');
+  document.getElementById('fEmoji').value     = p.emoji||'📄';
+  document.getElementById('fExcerpt').value   = p.excerpt;
+  document.getElementById('fContent').value   = p.content||'';
+  document.getElementById('modalTitle').textContent = '✏️ تعديل المقال';
+  livePreview();
+  document.getElementById('modalOverlay').style.display = 'flex';
+}
+
+function closeModal() { document.getElementById('modalOverlay').style.display='none'; }
+
+function savePost() {
+  const title    = document.getElementById('fTitle').value.trim();
+  const slug     = document.getElementById('fSlug').value.trim().replace(/[^\w\-]/g,'');
+  const author   = document.getElementById('fAuthor').value.trim()||'صاحب المدوّنة';
+  const date     = document.getElementById('fDate').value;
+  const readTime = parseInt(document.getElementById('fReadTime').value)||5;
+  const tags     = document.getElementById('fTags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const emoji    = document.getElementById('fEmoji').value.trim()||'📄';
+  const excerpt  = document.getElementById('fExcerpt').value.trim();
+  const content  = document.getElementById('fContent').value.trim();
+  const editSlug = document.getElementById('editSlug').value;
+
+  if (!title||!slug||!excerpt||!content) { toast('⚠️ يرجى ملء جميع الحقول المطلوبة'); return; }
+
+  const posts = getPosts();
+  const post  = {slug,title,excerpt,date,author,tags,readTime,emoji,content};
+
+  if (editSlug) {
+    const idx = posts.findIndex(p=>p.slug===editSlug);
+    if (idx>-1) posts[idx]=post; else posts.unshift(post);
+  } else {
+    if (posts.find(p=>p.slug===slug)) { toast('⚠️ الـ slug مستخدم، غيّره'); return; }
+    posts.unshift(post);
+  }
+  savePosts(posts);
+  closeModal();
+  renderStats(); renderTagFilter(); renderTable();
+  toast(editSlug?'✅ تم تحديث المقال!':'✅ تمت إضافة المقال!');
+}
+
+// ══ DELETE ══
+let pendingDelete = null;
+function openDelete(slug,title) {
+  pendingDelete=slug;
+  document.getElementById('deletePostTitle').textContent=title;
+  document.getElementById('deleteOverlay').style.display='flex';
+}
+function closeDelete() { document.getElementById('deleteOverlay').style.display='none'; pendingDelete=null; }
+function confirmDelete() {
+  if (!pendingDelete) return;
+  savePosts(getPosts().filter(p=>p.slug!==pendingDelete));
+  closeDelete();
+  renderStats(); renderTagFilter(); renderTable();
+  toast('🗑️ تم حذف المقال');
+}
+
+// ══ EDITOR ══
+const snippets={
+  h2:['<h2>','</h2>'],h3:['<h3>','</h3>'],p:['<p>','</p>'],
+  b:['<strong>','</strong>'],code:['<code>','</code>'],
+  pre:['<pre><code>','</code></pre>'],
+  ul:['<ul>\n  <li>','</li>\n</ul>'],
+  bq:['<blockquote>','</blockquote>']
+};
+function ins(type) {
+  const ta=document.getElementById('fContent');
+  const [o,c]=snippets[type];
+  const s=ta.selectionStart,e=ta.selectionEnd;
+  const sel=ta.value.substring(s,e)||'النص هنا';
+  ta.value=ta.value.substring(0,s)+o+sel+c+ta.value.substring(e);
+  ta.focus(); livePreview();
+}
+function livePreview() {
+  const pane=document.getElementById('livePreviewPane');
+  if (pane.style.display!=='none') pane.innerHTML=document.getElementById('fContent').value;
+}
+function togglePreview() {
+  const pane=document.getElementById('livePreviewPane');
+  pane.style.display=pane.style.display==='none'?'block':'none';
+  if(pane.style.display!=='none') livePreview();
+}
+
+// ══ EXPORT posts.js ══
+function exportPostsJS() {
+  const posts=getPosts().map(({content,...rest})=>rest);
+  const js='const POSTS = '+JSON.stringify(posts,null,2)+';\n';
+  dl('posts.js',js,'text/javascript');
+  toast('⬇️ تم تنزيل posts.js');
+}
+
+// ══ EXPORT HTML ══
+function exportAllHTML() {
+  const posts=getPosts().filter(p=>p.content);
+  if(!posts.length){toast('⚠️ لا توجد مقالات بمحتوى');return;}
+  posts.forEach((p,i)=>setTimeout(()=>dl(`${p.slug}.html`,buildHTML(p),'text/html'),i*250));
+  toast(`⬇️ تم تنزيل ${posts.length} ملف HTML`);
+}
+
+function buildHTML(p) {
+  const dt=new Date(p.date);
+  const dateAr=isNaN(dt)?p.date:`${dt.getDate()} ${AR_MONTHS[dt.getMonth()]} ${dt.getFullYear()}`;
+  const tagsHtml=p.tags.map(t=>`<span class="tag">${t}</span>`).join('');
+  return `<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>${p.title}</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<nav>
+  <a href="../index.html" class="logo">📝 مدوّنتي</a>
+  <div class="nav-links">
+    <a href="../index.html">الرئيسية</a>
+    <a href="../about.html">عن المدوّنة</a>
+    <a href="../archive.html">الأرشيف</a>
+  </div>
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="../index.html">الرئيسية</a>
+  <a href="../about.html">عن المدوّنة</a>
+  <a href="../archive.html">الأرشيف</a>
+</div>
+<div class="post-hero">
+  <div class="post-hero-inner">
+    <div class="post-tags">${tagsHtml}</div>
+    <h1>${p.title}</h1>
+    <div class="post-meta">
+      <span>📅 ${dateAr}</span>
+      <span>✍️ ${p.author}</span>
+      <span>⏱️ ${p.readTime} دقائق قراءة</span>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <div class="post-content">${p.content}</div>
+  <div class="post-nav">
+    <a href="../index.html">← العودة للرئيسية</a>
+    <a href="../archive.html">الأرشيف ←</a>
+  </div>
+</div>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">📝 مدوّنتي</div>
+    <div class="footer-links">
+      <a href="../index.html">الرئيسية</a>
+      <a href="../about.html">عن المدوّنة</a>
+      <a href="../archive.html">الأرشيف</a>
+    </div>
+    <p class="copy">© <span id="yr"></span> جميع الحقوق محفوظة</p>
+  </div>
+</footer>
+<script>
+  document.getElementById("yr").textContent=new Date().getFullYear();
+  function toggleMenu(){document.getElementById("mobileMenu").classList.toggle("open");}
+<\/script>
+</body>
+</html>`;
+}
+
+function dl(name,content,type) {
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([content],{type}));
+  a.download=name; a.click();
+  URL.revokeObjectURL(a.href);
+}
+</script>
 </body>
 </html>
