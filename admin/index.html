@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>لوحة التحكم — مدوّنتي</title>
+  <link rel="stylesheet" href="../assets/style.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+
+<!-- ══ LOGIN SCREEN ══════════════════════════════════════════════════════════ -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-icon">🔐</div>
+    <h2>لوحة التحكم</h2>
+    <p>أدخل كلمة المرور للمتابعة</p>
+    <div class="login-error" id="loginError"></div>
+    <form onsubmit="doLogin(event)">
+      <div class="input-wrap">
+        <input type="password" id="passInput" placeholder="••••••••" autocomplete="current-password">
+        <button type="button" class="eye-btn" onclick="togglePass()">👁</button>
+      </div>
+      <button type="submit" class="btn-login">دخول →</button>
+    </form>
+    <a href="../index.html" class="back-link">← العودة للمدوّنة</a>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD ═════════════════════════════════════════════════════════════ -->
+<div class="dashboard" id="dashboard" style="display:none">
+
+  <nav class="admin-nav">
+    <a href="../index.html" class="logo">📝 مدوّنتي</a>
+    <div class="admin-nav-center">لوحة التحكم</div>
+    <div class="admin-nav-actions">
+      <button class="btn-new" onclick="openModal()">+ مقال جديد</button>
+      <button class="btn-logout" onclick="doLogout()">خروج 🚪</button>
+    </div>
+  </nav>
+
+  <div class="admin-container">
+
+    <!-- Stats -->
+    <div class="stats-row" id="statsRow"></div>
+
+    <!-- Search -->
+    <div class="admin-toolbar">
+      <input type="text" id="adminSearch" placeholder="🔍 ابحث في المقالات..."
+             oninput="renderTable()" class="admin-search">
+      <select id="tagFilter" onchange="renderTable()" class="admin-select">
+        <option value="">كل الوسوم</option>
+      </select>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap">
+      <table class="posts-table">
+        <thead>
+          <tr>
+            <th>المقال</th>
+            <th>الوسوم</th>
+            <th>التاريخ</th>
+            <th>وقت القراءة</th>
+            <th>إجراءات</th>
+          </tr>
+        </thead>
+        <tbody id="postsTableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Export section -->
+    <div class="export-section">
+      <h3>📤 تصدير للنشر على GitHub</h3>
+      <p>بعد إضافة أو تعديل المقالات، اضغط لتنزيل الملفات المحدّثة ورفعها على GitHub.</p>
+      <div class="export-btns">
+        <button class="btn-export" onclick="exportPostsJS()">
+          ⬇️ تنزيل posts.js
+        </button>
+        <button class="btn-export secondary" onclick="exportAllHTML()">
+          ⬇️ تنزيل جميع صفحات المقالات (HTML)
+        </button>
+      </div>
+      <div class="export-hint">
+        💡 <strong>posts.js</strong> → ضعه في <code>assets/</code> | 
+        <strong>ملفات HTML</strong> → ضعها في مجلد <code>posts/</code>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ MODAL: ADD / EDIT ══════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <h2 id="modalTitle">مقال جديد</h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editSlug">
+
+      <div class="form-row">
+        <div class="form-group full">
+          <label>عنوان المقال <span class="req">*</span></label>
+          <input type="text" id="fTitle" placeholder="اكتب عنواناً جذاباً...">
+        </div>
+      </div>
+
+      <div class="form-row two-col">
+        <div class="form-group">
+          <label>Slug (رابط المقال) <span class="req">*</span></label>
+          <input type="text" id="fSlug" placeholder="my-post-slug" dir="ltr">
+          <small>أحرف إنجليزية وشرطات فقط</small>
+        </div>
+        <div class="form-group">
+          <label>الكاتب</label>
+          <input type="text" id="fAuthor" placeholder="اسم الكاتب">
+        </div>
+      </div>
+
+      <div class="form-row two-col">
+        <div class="form-group">
+          <label>التاريخ <span class="req">*</span></label>
+          <input type="date" id="fDate" dir="ltr">
+        </div>
+        <div class="form-group">
+          <label>وقت القراءة (دقائق)</label>
+          <input type="number" id="fReadTime" min="1" max="60" value="5" dir="ltr">
+        </div>
+      </div>
+
+      <div class="form-row two-col">
+        <div class="form-group">
+          <label>الوسوم (افصل بفاصلة)</label>
+          <input type="text" id="fTags" placeholder="تقنية, PHP, تطوير">
+        </div>
+        <div class="form-group">
+          <label>الإيموجي</label>
+          <input type="text" id="fEmoji" placeholder="🚀" maxlength="4">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group full">
+          <label>مقتطف المقال <span class="req">*</span></label>
+          <textarea id="fExcerpt" rows="2" placeholder="وصف مختصر يظهر في بطاقة المقال..."></textarea>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group full">
+          <label>محتوى المقال (HTML) <span class="req">*</span></label>
+          <div class="editor-toolbar">
+            <button type="button" onclick="ins('h2')">H2</button>
+            <button type="button" onclick="ins('h3')">H3</button>
+            <button type="button" onclick="ins('p')">فقرة</button>
+            <button type="button" onclick="ins('b')"><b>B</b></button>
+            <button type="button" onclick="ins('code')">كود</button>
+            <button type="button" onclick="ins('pre')">بلوك كود</button>
+            <button type="button" onclick="ins('ul')">قائمة</button>
+            <button type="button" onclick="ins('bq')">اقتباس</button>
+            <button type="button" onclick="ins('a')">رابط</button>
+            <button type="button" onclick="togglePreview()">👁 معاينة</button>
+          </div>
+          <div class="editor-split" id="editorSplit">
+            <textarea id="fContent" rows="14"
+              placeholder="<h2>عنوان</h2>&#10;<p>نص الفقرة...</p>"
+              oninput="livePreview()"></textarea>
+            <div class="preview-pane post-content" id="livePreviewPane" style="display:none"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">إلغاء</button>
+      <button class="btn-save" onclick="savePost()">💾 حفظ المقال</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DELETE CONFIRM ════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="deleteOverlay" onclick="closeDelete(event)">
+  <div class="modal small-modal">
+    <div class="modal-header">
+      <h2>تأكيد الحذف</h2>
+      <button class="modal-close" onclick="closeDelete()">✕</button>
+    </div>
+    <div class="modal-body" style="text-align:center;padding:2rem">
+      <div style="font-size:3.5rem;margin-bottom:1rem">🗑️</div>
+      <p>هل أنت متأكد من حذف المقال؟</p>
+      <p id="deletePostTitle" style="font-weight:700;margin-top:.5rem;color:var(--primary)"></p>
+      <p style="color:var(--muted);font-size:.9rem;margin-top:.5rem">لا يمكن التراجع عن هذا الإجراء</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeDelete()">إلغاء</button>
+      <button class="btn-delete-confirm" onclick="confirmDelete()">نعم، احذف</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CHANGE PASSWORD MODAL ════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="pwdOverlay" onclick="closePwdModal(event)">
+  <div class="modal small-modal">
+    <div class="modal-header">
+      <h2>🔑 تغيير كلمة المرور</h2>
+      <button class="modal-close" onclick="closePwdModal()">✕</button>
+    </div>
+    <div class="modal-body" style="padding:1.5rem">
+      <div class="form-group full" style="margin-bottom:1.2rem">
+        <label>كلمة المرور الجديدة</label>
+        <div class="input-wrap">
+          <input type="password" id="newPwd1" placeholder="••••••••">
+          <button type="button" class="eye-btn" onclick="togglePwd('newPwd1')">👁</button>
+        </div>
+      </div>
+      <div class="form-group full">
+        <label>تأكيد كلمة المرور</label>
+        <div class="input-wrap">
+          <input type="password" id="newPwd2" placeholder="••••••••">
+          <button type="button" class="eye-btn" onclick="togglePwd('newPwd2')">👁</button>
+        </div>
+      </div>
+      <div class="login-error" id="pwdError" style="margin-top:1rem"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closePwdModal()">إلغاء</button>
+      <button class="btn-save" onclick="changePwd()">💾 حفظ</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/posts.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
